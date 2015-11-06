@@ -5,13 +5,12 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 import android.view.View;
 
-import mx.eduardopool.notes.fragments.NoteDetailFragment;
 import mx.eduardopool.notes.R;
+import mx.eduardopool.notes.fragments.NoteDetailFragment;
 
 /**
  * An activity representing a single Note detail screen. This
@@ -27,9 +26,6 @@ public class NoteDetailActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_note_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
-        setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -41,7 +37,10 @@ public class NoteDetailActivity extends BaseActivity {
         });
 
         // Show the Up button in the action bar.
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -64,6 +63,16 @@ public class NoteDetailActivity extends BaseActivity {
                     .add(R.id.note_detail_container, fragment)
                     .commit();
         }
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_note_detail;
+    }
+
+    @Override
+    protected int getToolbarId() {
+        return R.id.detail_toolbar;
     }
 
     @Override

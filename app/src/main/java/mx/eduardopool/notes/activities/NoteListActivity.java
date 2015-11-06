@@ -4,15 +4,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
 
+import mx.eduardopool.notes.R;
 import mx.eduardopool.notes.fragments.NoteDetailFragment;
 import mx.eduardopool.notes.fragments.NoteListFragment;
-import mx.eduardopool.notes.R;
 
 
 /**
@@ -43,11 +45,6 @@ public class NoteListActivity extends BaseActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_note_app_bar);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -73,6 +70,11 @@ public class NoteListActivity extends BaseActivity
         }
 
         // TODO: If exposing deep links into your app, handle intents here.
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_note_app_bar;
     }
 
     /**
@@ -116,5 +118,30 @@ public class NoteListActivity extends BaseActivity
 
         // Logs 'app deactivate' App Event.
         AppEventsLogger.deactivateApp(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.signOutMenuId:
+
+                LoginManager.getInstance().logOut();
+
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+
+                finish();
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
