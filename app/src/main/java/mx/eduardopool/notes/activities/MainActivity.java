@@ -6,7 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.facebook.AccessToken;
 
-public class MainActivity extends AppCompatActivity {
+import mx.eduardopool.notes.R;
+
+public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -14,8 +16,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+
+        AccessToken.refreshCurrentAccessTokenAsync();
         doAuthentication(AccessToken.getCurrentAccessToken());
     }
 

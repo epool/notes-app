@@ -2,8 +2,6 @@ package mx.eduardopool.notes.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,8 +11,12 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 
 import mx.eduardopool.notes.R;
+import mx.eduardopool.notes.databinding.ActivityNoteAppBarBinding;
+import mx.eduardopool.notes.dummy.DummyContent;
 import mx.eduardopool.notes.fragments.NoteDetailFragment;
+import mx.eduardopool.notes.fragments.NoteDialogFragment;
 import mx.eduardopool.notes.fragments.NoteListFragment;
+import mx.eduardopool.notes.models.NoteItem;
 
 
 /**
@@ -34,7 +36,7 @@ import mx.eduardopool.notes.fragments.NoteListFragment;
  * to listen for item selections.
  */
 public class NoteListActivity extends BaseActivity
-        implements NoteListFragment.Callbacks {
+        implements NoteListFragment.Callbacks, NoteDialogFragment.NoteDialogListener {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -42,20 +44,25 @@ public class NoteListActivity extends BaseActivity
      */
     private boolean mTwoPane;
 
+    private NoteListFragment noteListFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        ActivityNoteAppBarBinding binding = getBinding(ActivityNoteAppBarBinding.class);
+
+        binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                NoteDialogFragment noteDialogFragment = NoteDialogFragment.newInstance(null);
+                noteDialogFragment.show(getSupportFragmentManager(), "NoteDialogFragment");
             }
         });
 
-        if (findViewById(R.id.note_detail_container) != null) {
+        noteListFragment = (NoteListFragment) getSupportFragmentManager().findFragmentById(R.id.note_list);
+
+        if (binding.frameLayout.findViewById(R.id.note_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-large and
             // res/values-sw600dp). If this view is present, then the
@@ -64,12 +71,8 @@ public class NoteListActivity extends BaseActivity
 
             // In two-pane mode, list items should be given the
             // 'activated' state when touched.
-            ((NoteListFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.note_list))
-                    .setActivateOnItemClick(true);
+            noteListFragment.setActivateOnItemClick(true);
         }
-
-        // TODO: If exposing deep links into your app, handle intents here.
     }
 
     @Override
@@ -82,13 +85,13 @@ public class NoteListActivity extends BaseActivity
      * indicating that the item with the given ID was selected.
      */
     @Override
-    public void onItemSelected(String id) {
+    public void onItemSelected(NoteItem noteItem) {
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(NoteDetailFragment.ARG_ITEM_ID, id);
+            arguments.putParcelable(NoteDetailFragment.ARG_NOTE_ITEM, noteItem);
             NoteDetailFragment fragment = new NoteDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -99,7 +102,7 @@ public class NoteListActivity extends BaseActivity
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, NoteDetailActivity.class);
-            detailIntent.putExtra(NoteDetailFragment.ARG_ITEM_ID, id);
+            detailIntent.putExtra(NoteDetailFragment.ARG_NOTE_ITEM, noteItem);
             startActivity(detailIntent);
         }
     }
@@ -143,5 +146,11 @@ public class NoteListActivity extends BaseActivity
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onDialogPositiveClick(NoteItem noteItem) {
+        noteItem.setId(String.valueOf(DummyContent.ITEMS.size()));
+        noteListFragment.addNewNote(noteItem);
     }
 }

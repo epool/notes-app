@@ -3,4 +3,6 @@
     <string name="title_note_detail">Note Detail</string>
     <string name="facebook_app_id">195187304148154</string>
     <string name="menu.item.sing.out">Sign Out</string>
+    <string name="hint.note.title">Title</string>
+    <string name="hint.note.text">Text</string>
 </resources>

@@ -1,9 +1,22 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/note_detail"
-    style="?android:attr/textAppearanceLarge"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp"
-    android:textIsSelectable="true"
-    tools:context=".NoteDetailFragment" />
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="mx.eduardopool.notes.models.NoteItem" />
+
+        <variable
+            name="noteItem"
+            type="NoteItem" />
+    </data>
+
+    <TextView
+        android:id="@+id/noteDetail"
+        style="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:text="@{noteItem.text}"
+        android:textIsSelectable="true"
+        tools:context=".fragments.NoteDetailFragment" />
+</layout>

@@ -1,13 +1,20 @@
 package mx.eduardopool.notes.fragments;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.annotation.NonNull;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
+import mx.eduardopool.notes.R;
+import mx.eduardopool.notes.adapters.NoteListAdapter;
+import mx.eduardopool.notes.databinding.FragmentNoteListBinding;
 import mx.eduardopool.notes.dummy.DummyContent;
+import mx.eduardopool.notes.models.NoteItem;
 
 /**
  * A list fragment representing a list of Notes. This fragment
@@ -18,7 +25,7 @@ import mx.eduardopool.notes.dummy.DummyContent;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class NoteListFragment extends ListFragment {
+public class NoteListFragment extends BaseFragment implements AdapterView.OnItemClickListener {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -31,7 +38,7 @@ public class NoteListFragment extends ListFragment {
      */
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onItemSelected(String id) {
+        public void onItemSelected(NoteItem noteItem) {
         }
     };
     /**
@@ -44,6 +51,10 @@ public class NoteListFragment extends ListFragment {
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
+    private NoteListAdapter noteListAdapter;
+
+    private FragmentNoteListBinding binding;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -51,16 +62,20 @@ public class NoteListFragment extends ListFragment {
     public NoteListFragment() {
     }
 
+    @NonNull
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_note_list, null, false);
 
-        // TODO: replace with a real list adapter.
-        setListAdapter(new ArrayAdapter<>(
+        noteListAdapter = new NoteListAdapter(
                 getActivity(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                DummyContent.ITEMS));
+                DummyContent.ITEMS);
+
+        binding.noteList.setAdapter(noteListAdapter);
+
+        binding.noteList.setOnItemClickListener(this);
+
+        return binding.getRoot();
     }
 
     @Override
@@ -95,15 +110,6 @@ public class NoteListFragment extends ListFragment {
     }
 
     @Override
-    public void onListItemClick(ListView listView, View view, int position, long id) {
-        super.onListItemClick(listView, view, position, id);
-
-        // Notify the active callbacks interface (the activity, if the
-        // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).getId());
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mActivatedPosition != ListView.INVALID_POSITION) {
@@ -119,19 +125,31 @@ public class NoteListFragment extends ListFragment {
     public void setActivateOnItemClick(boolean activateOnItemClick) {
         // When setting CHOICE_MODE_SINGLE, ListView will automatically
         // give items the 'activated' state when touched.
-        getListView().setChoiceMode(activateOnItemClick
+        binding.noteList.setChoiceMode(activateOnItemClick
                 ? ListView.CHOICE_MODE_SINGLE
                 : ListView.CHOICE_MODE_NONE);
     }
 
     private void setActivatedPosition(int position) {
         if (position == ListView.INVALID_POSITION) {
-            getListView().setItemChecked(mActivatedPosition, false);
+            binding.noteList.setItemChecked(mActivatedPosition, false);
         } else {
-            getListView().setItemChecked(position, true);
+            binding.noteList.setItemChecked(position, true);
         }
 
         mActivatedPosition = position;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        // Notify the active callbacks interface (the activity, if the
+        // fragment is attached to one) that an item has been selected.
+        NoteItem noteItem = (NoteItem) parent.getItemAtPosition(position);
+        mCallbacks.onItemSelected(noteItem);
+    }
+
+    public void addNewNote(NoteItem noteItem) {
+        noteListAdapter.addNewNote(noteItem);
     }
 
     /**
@@ -143,6 +161,6 @@ public class NoteListFragment extends ListFragment {
         /**
          * Callback for when an item has been selected.
          */
-        void onItemSelected(String id);
+        void onItemSelected(NoteItem noteItem);
     }
 }
