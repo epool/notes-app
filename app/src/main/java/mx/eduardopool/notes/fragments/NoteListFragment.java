@@ -90,6 +90,12 @@ public class NoteListFragment extends BaseFragment implements AdapterView.OnItem
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        noteListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
