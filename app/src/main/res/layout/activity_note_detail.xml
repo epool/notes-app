@@ -2,6 +2,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="noteWrapper"
+            type="mx.eduardopool.notes.models.wrappers.NoteWrapper" />
+    </data>
+
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -23,6 +30,7 @@
                 android:fitsSystemWindows="true"
                 app:contentScrim="?attr/colorPrimary"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                app:title="@{noteWrapper.title}"
                 app:toolbarId="@+id/toolbar">
 
                 <android.support.v7.widget.Toolbar

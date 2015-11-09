@@ -1,6 +1,9 @@
 package mx.eduardopool.notes.fragments;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,12 +12,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
 import mx.eduardopool.notes.R;
 import mx.eduardopool.notes.adapters.NoteListAdapter;
 import mx.eduardopool.notes.databinding.FragmentNoteListBinding;
-import mx.eduardopool.notes.dummy.DummyContent;
-import mx.eduardopool.notes.models.NoteItem;
+import mx.eduardopool.notes.models.NoteModel;
+import mx.eduardopool.notes.models.realm.Note;
 
 /**
  * A list fragment representing a list of Notes. This fragment
@@ -25,7 +31,7 @@ import mx.eduardopool.notes.models.NoteItem;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class NoteListFragment extends BaseFragment implements AdapterView.OnItemClickListener {
+public class NoteListFragment extends BaseFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -38,7 +44,12 @@ public class NoteListFragment extends BaseFragment implements AdapterView.OnItem
      */
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onItemSelected(NoteItem noteItem) {
+        public void onItemSelected(Note note) {
+        }
+
+        @Override
+        public void onItemDeleted(Note note) {
+
         }
     };
     /**
@@ -55,6 +66,8 @@ public class NoteListFragment extends BaseFragment implements AdapterView.OnItem
 
     private FragmentNoteListBinding binding;
 
+    private Realm realm;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -62,18 +75,28 @@ public class NoteListFragment extends BaseFragment implements AdapterView.OnItem
     public NoteListFragment() {
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        realm = Realm.getDefaultInstance();
+
+        RealmResults<Note> notes = NoteModel.getCurrentUserNotes(getBaseActivity(), realm);
+        noteListAdapter = new NoteListAdapter(getBaseActivity(), notes, true);
+    }
+
     @NonNull
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_note_list, null, false);
 
-        noteListAdapter = new NoteListAdapter(
-                getActivity(),
-                DummyContent.ITEMS);
+        binding.noteList.setEmptyView(binding.getRoot().findViewById(android.R.id.empty));
 
         binding.noteList.setAdapter(noteListAdapter);
 
         binding.noteList.setOnItemClickListener(this);
+
+        binding.noteList.setOnItemLongClickListener(this);
 
         return binding.getRoot();
     }
@@ -87,12 +110,6 @@ public class NoteListFragment extends BaseFragment implements AdapterView.OnItem
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        noteListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -124,6 +141,13 @@ public class NoteListFragment extends BaseFragment implements AdapterView.OnItem
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        realm.close();
+    }
+
     /**
      * Turns on activate-on-click mode. When this mode is on, list items will be
      * given the 'activated' state when touched.
@@ -150,12 +174,31 @@ public class NoteListFragment extends BaseFragment implements AdapterView.OnItem
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
-        NoteItem noteItem = (NoteItem) parent.getItemAtPosition(position);
-        mCallbacks.onItemSelected(noteItem);
+        Note note = (Note) parent.getItemAtPosition(position);
+        mCallbacks.onItemSelected(note);
     }
 
-    public void addNewNote(NoteItem noteItem) {
-        noteListAdapter.addNewNote(noteItem);
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        final Note note = (Note) parent.getItemAtPosition(position);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getBaseActivity());
+        builder.setTitle(R.string.title_delete_note);
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getBaseActivity(), "This note will be deleted", Toast.LENGTH_LONG).show();
+                mCallbacks.onItemDeleted(note);
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        Dialog dialog = builder.create();
+        dialog.show();
+        return true;
     }
 
     /**
@@ -167,6 +210,8 @@ public class NoteListFragment extends BaseFragment implements AdapterView.OnItem
         /**
          * Callback for when an item has been selected.
          */
-        void onItemSelected(NoteItem noteItem);
+        void onItemSelected(Note note);
+
+        void onItemDeleted(Note note);
     }
 }

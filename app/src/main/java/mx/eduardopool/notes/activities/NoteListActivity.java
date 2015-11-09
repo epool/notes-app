@@ -12,11 +12,12 @@ import com.facebook.login.LoginManager;
 
 import mx.eduardopool.notes.R;
 import mx.eduardopool.notes.databinding.ActivityNoteAppBarBinding;
-import mx.eduardopool.notes.dummy.DummyContent;
 import mx.eduardopool.notes.fragments.NoteDetailFragment;
 import mx.eduardopool.notes.fragments.NoteDialogFragment;
 import mx.eduardopool.notes.fragments.NoteListFragment;
-import mx.eduardopool.notes.models.NoteItem;
+import mx.eduardopool.notes.models.NoteModel;
+import mx.eduardopool.notes.models.realm.Note;
+import mx.eduardopool.notes.models.wrappers.NoteWrapper;
 
 
 /**
@@ -44,8 +45,6 @@ public class NoteListActivity extends BaseActivity
      */
     private boolean mTwoPane;
 
-    private NoteListFragment noteListFragment;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,8 +59,6 @@ public class NoteListActivity extends BaseActivity
             }
         });
 
-        noteListFragment = (NoteListFragment) getSupportFragmentManager().findFragmentById(R.id.note_list);
-
         if (binding.frameLayout.findViewById(R.id.note_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-large and
@@ -71,6 +68,7 @@ public class NoteListActivity extends BaseActivity
 
             // In two-pane mode, list items should be given the
             // 'activated' state when touched.
+            NoteListFragment noteListFragment = (NoteListFragment) getSupportFragmentManager().findFragmentById(R.id.note_list);
             noteListFragment.setActivateOnItemClick(true);
         }
     }
@@ -85,13 +83,14 @@ public class NoteListActivity extends BaseActivity
      * indicating that the item with the given ID was selected.
      */
     @Override
-    public void onItemSelected(NoteItem noteItem) {
+    public void onItemSelected(Note note) {
+        NoteWrapper noteWrapper = new NoteWrapper(note);
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putParcelable(NoteDetailFragment.ARG_NOTE_ITEM, noteItem);
+            arguments.putParcelable(NoteDetailFragment.ARG_NOTE_ITEM, noteWrapper);
             NoteDetailFragment fragment = new NoteDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -102,9 +101,14 @@ public class NoteListActivity extends BaseActivity
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, NoteDetailActivity.class);
-            detailIntent.putExtra(NoteDetailFragment.ARG_NOTE_ITEM, noteItem);
+            detailIntent.putExtra(NoteDetailFragment.ARG_NOTE_ITEM, noteWrapper);
             startActivity(detailIntent);
         }
+    }
+
+    @Override
+    public void onItemDeleted(Note note) {
+        NoteModel.deleteNote(this, new NoteWrapper(note));
     }
 
     @Override
@@ -149,8 +153,7 @@ public class NoteListActivity extends BaseActivity
     }
 
     @Override
-    public void onDialogPositiveClick(NoteItem noteItem) {
-        noteItem.setId(String.valueOf(DummyContent.ITEMS.size()));
-        noteListFragment.addNewNote(noteItem);
+    public void onDialogPositiveClick(NoteWrapper noteWrapper) {
+        NoteModel.addNewNote(this, noteWrapper);
     }
 }

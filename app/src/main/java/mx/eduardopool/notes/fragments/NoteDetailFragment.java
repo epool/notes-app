@@ -13,7 +13,7 @@ import mx.eduardopool.notes.R;
 import mx.eduardopool.notes.activities.NoteDetailActivity;
 import mx.eduardopool.notes.activities.NoteListActivity;
 import mx.eduardopool.notes.databinding.FragmentNoteDetailBinding;
-import mx.eduardopool.notes.models.NoteItem;
+import mx.eduardopool.notes.models.wrappers.NoteWrapper;
 
 /**
  * A fragment representing a single Note detail screen.
@@ -31,7 +31,7 @@ public class NoteDetailFragment extends BaseFragment {
     /**
      * The dummy title this fragment is presenting.
      */
-    private NoteItem noteItem;
+    private NoteWrapper noteWrapper;
 
     private FragmentNoteDetailBinding binding;
 
@@ -42,10 +42,10 @@ public class NoteDetailFragment extends BaseFragment {
     public NoteDetailFragment() {
     }
 
-    public static NoteDetailFragment newInstance(NoteItem noteItem) {
+    public static NoteDetailFragment newInstance(NoteWrapper noteWrapper) {
 
         Bundle args = new Bundle();
-        args.putParcelable(ARG_NOTE_ITEM, noteItem);
+        args.putParcelable(ARG_NOTE_ITEM, noteWrapper);
 
         NoteDetailFragment fragment = new NoteDetailFragment();
         fragment.setArguments(args);
@@ -60,9 +60,9 @@ public class NoteDetailFragment extends BaseFragment {
             // Load the dummy title specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load title from a title provider.
-            noteItem = getArguments().getParcelable(ARG_NOTE_ITEM);
-            if (noteItem != null) {
-                setTitle(noteItem.getTitle());
+            noteWrapper = getArguments().getParcelable(ARG_NOTE_ITEM);
+            if (noteWrapper != null) {
+                setTitle(noteWrapper.getTitle());
             }
         }
     }
@@ -77,18 +77,12 @@ public class NoteDetailFragment extends BaseFragment {
 
     @NonNull
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_note_detail, container, false);
 
-        binding.setNoteItem(noteItem);
+        binding.setNoteWrapper(noteWrapper);
 
         return binding.getRoot();
-    }
-
-    public void updateNoteDetail(NoteItem noteItem) {
-        setTitle(noteItem.getTitle());
-        binding.setNoteItem(noteItem);
     }
 
 }
