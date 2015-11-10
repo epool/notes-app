@@ -3,20 +3,32 @@
 
     <data>
 
-        <import type="mx.eduardopool.notes.models.NoteItem" />
-
         <variable
-            name="noteItem"
-            type="NoteItem" />
+            name="noteWrapper"
+            type="mx.eduardopool.notes.models.wrappers.NoteWrapper" />
     </data>
 
-    <TextView
-        android:id="@+id/noteDetail"
-        style="?android:attr/textAppearanceLarge"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp"
-        android:text="@{noteItem.text}"
-        android:textIsSelectable="true"
-        tools:context=".fragments.NoteDetailFragment" />
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/createDateTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{@string/label_created_at(noteWrapper.createDateFormatted)}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+        <TextView
+            android:id="@+id/noteDetail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@{noteWrapper.text}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textIsSelectable="true"
+            tools:context=".fragments.NoteDetailFragment" />
+
+    </LinearLayout>
 </layout>

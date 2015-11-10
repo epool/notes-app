@@ -8,27 +8,32 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+
+import java.util.Date;
 
 import mx.eduardopool.notes.R;
 import mx.eduardopool.notes.databinding.AddEditNoteBinding;
-import mx.eduardopool.notes.models.NoteItem;
+import mx.eduardopool.notes.models.wrappers.NoteWrapper;
 
 /**
  * Dialog fragment to add and edit notes.
  * Created by epool on 11/6/15.
  */
 public class NoteDialogFragment extends DialogFragment {
-    private static String NOTE_ITEM_KEY = "NOTE_ITEM_KEY";
+    private static String NOTE_KEY = "NOTE_KEY";
     private AddEditNoteBinding binding;
 
     // Use this instance of the interface to deliver action events
     private NoteDialogListener listener;
 
-    public static NoteDialogFragment newInstance(NoteItem noteItem) {
+    public static NoteDialogFragment newInstance(NoteWrapper noteWrapper) {
 
         Bundle args = new Bundle();
-        args.putParcelable(NOTE_ITEM_KEY, noteItem != null ? noteItem : new NoteItem());
+        args.putParcelable(NOTE_KEY, noteWrapper != null ? noteWrapper : new NoteWrapper());
 
         NoteDialogFragment fragment = new NoteDialogFragment();
         fragment.setArguments(args);
@@ -43,10 +48,10 @@ public class NoteDialogFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         binding = DataBindingUtil.inflate(inflater, R.layout.add_edit_note, null, false);
 
-        NoteItem noteItem = getArguments().getParcelable(NOTE_ITEM_KEY);
-
-        binding.setNoteItem(noteItem);
+        NoteWrapper noteWrapper = getArguments().getParcelable(NOTE_KEY);
+        binding.setNoteWrapper(noteWrapper);
         binding.executePendingBindings();
+
         binding.titleEditText.setSelection(binding.titleEditText.getText().length());
         binding.textEditText.setSelection(binding.textEditText.getText().length());
 
@@ -57,10 +62,7 @@ public class NoteDialogFragment extends DialogFragment {
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        NoteItem noteItem = binding.getNoteItem();
-                        noteItem.setTitle(binding.titleEditText.getText().toString());
-                        noteItem.setText(binding.textEditText.getText().toString());
-                        listener.onDialogPositiveClick(noteItem);
+                        // This will be overwritten in onStart()
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -69,6 +71,49 @@ public class NoteDialogFragment extends DialogFragment {
                     }
                 });
         return builder.create();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        final AlertDialog alertDialog = (AlertDialog) getDialog();
+        if (alertDialog != null) {
+            Button positiveButton = alertDialog.getButton(Dialog.BUTTON_POSITIVE);
+            positiveButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    binding.titleInputLayout.setError(null);
+                    binding.textInputLayout.setError(null);
+
+                    String title = binding.titleEditText.getText().toString();
+                    String text = binding.textEditText.getText().toString();
+
+                    String fieldRequiredErrorMessage = getResources().getString(R.string.error_field_required);
+
+                    if (TextUtils.isEmpty(title) && TextUtils.isEmpty(text)) {
+                        binding.titleInputLayout.setError(fieldRequiredErrorMessage);
+                        binding.textInputLayout.setError(fieldRequiredErrorMessage);
+                        return;
+                    } else if (TextUtils.isEmpty(title)) {
+                        binding.titleInputLayout.setError(fieldRequiredErrorMessage);
+                        return;
+                    } else if (TextUtils.isEmpty(text)) {
+                        binding.textInputLayout.setError(fieldRequiredErrorMessage);
+                        return;
+                    }
+
+                    NoteWrapper noteWrapper = binding.getNoteWrapper();
+                    noteWrapper.setTitle(title);
+                    noteWrapper.setText(text);
+                    noteWrapper.setCreateDate(new Date());
+
+                    listener.onDialogPositiveClick(noteWrapper);
+
+                    alertDialog.dismiss();
+                }
+            });
+        }
     }
 
     @Override
@@ -86,6 +131,6 @@ public class NoteDialogFragment extends DialogFragment {
     }
 
     public interface NoteDialogListener {
-        void onDialogPositiveClick(NoteItem noteItem);
+        void onDialogPositiveClick(NoteWrapper noteWrapper);
     }
 }

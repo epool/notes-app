@@ -9,10 +9,10 @@ import android.view.View;
 
 import mx.eduardopool.notes.R;
 import mx.eduardopool.notes.databinding.ActivityNoteDetailBinding;
-import mx.eduardopool.notes.dummy.DummyContent;
 import mx.eduardopool.notes.fragments.NoteDetailFragment;
 import mx.eduardopool.notes.fragments.NoteDialogFragment;
-import mx.eduardopool.notes.models.NoteItem;
+import mx.eduardopool.notes.models.NoteModel;
+import mx.eduardopool.notes.models.wrappers.NoteWrapper;
 
 /**
  * An activity representing a single Note detail screen. This
@@ -24,7 +24,6 @@ import mx.eduardopool.notes.models.NoteItem;
  * more than a {@link NoteDetailFragment}.
  */
 public class NoteDetailActivity extends BaseActivity implements NoteDialogFragment.NoteDialogListener {
-    private NoteDetailFragment noteDetailFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,12 +31,13 @@ public class NoteDetailActivity extends BaseActivity implements NoteDialogFragme
 
         ActivityNoteDetailBinding binding = getBinding(ActivityNoteDetailBinding.class);
 
-        final NoteItem noteItem = getIntent().getParcelableExtra(NoteDetailFragment.ARG_NOTE_ITEM);
+        final NoteWrapper noteWrapper = getIntent().getParcelableExtra(NoteDetailFragment.ARG_NOTE_ITEM);
+        binding.setNoteWrapper(noteWrapper);
 
         binding.fabEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NoteDialogFragment noteDialogFragment = NoteDialogFragment.newInstance(noteItem);
+                NoteDialogFragment noteDialogFragment = NoteDialogFragment.newInstance(noteWrapper);
                 noteDialogFragment.show(getSupportFragmentManager(), "NoteDialogFragment");
             }
         });
@@ -60,7 +60,7 @@ public class NoteDetailActivity extends BaseActivity implements NoteDialogFragme
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
-            noteDetailFragment = NoteDetailFragment.newInstance(noteItem);
+            NoteDetailFragment noteDetailFragment = NoteDetailFragment.newInstance(noteWrapper);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.note_detail_container, noteDetailFragment)
                     .commit();
@@ -97,12 +97,7 @@ public class NoteDetailActivity extends BaseActivity implements NoteDialogFragme
     }
 
     @Override
-    public void onDialogPositiveClick(NoteItem noteItem) {
-        NoteItem noteItemToUpdate = DummyContent.getNoteItemById(noteItem.getId());
-        if (noteItemToUpdate != null) {
-            noteItemToUpdate.setTitle(noteItem.getTitle());
-            noteItemToUpdate.setText(noteItem.getText());
-            noteDetailFragment.updateNoteDetail(noteItem);
-        }
+    public void onDialogPositiveClick(NoteWrapper noteWrapper) {
+        NoteModel.updateNote(this, noteWrapper);
     }
 }

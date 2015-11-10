@@ -2,7 +2,13 @@
     <string name="app_name">Notes</string>
     <string name="title_note_detail">Note Detail</string>
     <string name="facebook_app_id">195187304148154</string>
-    <string name="menu.item.sing.out">Sign Out</string>
-    <string name="hint.note.title">Title</string>
-    <string name="hint.note.text">Text</string>
+    <string name="menu_item_sing_out">Sign Out</string>
+    <string name="hint_note_title">Title</string>
+    <string name="hint_note_text">Text</string>
+    <string name="error_field_required">This field is required.</string>
+    <string name="title_delete_note">Are you sure you want delete this note?</string>
+    <string name="message_no_notes">You have no notes yet. Please add a new one =D.</string>
+    <string name="shared_preference_file_name">mx.eduardopool.notes.PREFERENCE_FILE_KEY</string>
+    <string name="current_user_id">mx.eduardopool.notes.CURRENT_USER_ID_KEY</string>
+    <string name="label_created_at">Created at %s</string>
 </resources>

@@ -3,11 +3,9 @@
 
     <data>
 
-        <import type="mx.eduardopool.notes.models.NoteItem" />
-
         <variable
-            name="noteItem"
-            type="NoteItem" />
+            name="noteWrapper"
+            type="mx.eduardopool.notes.models.wrappers.NoteWrapper" />
     </data>
 
     <LinearLayout
@@ -25,9 +23,10 @@
                 android:id="@+id/titleEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint.note.title"
+                android:hint="@string/hint_note_title"
+                android:inputType="textCapWords"
                 android:singleLine="true"
-                android:text="@{noteItem.title}" />
+                android:text="@{noteWrapper.title}" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -40,9 +39,10 @@
                 android:id="@+id/textEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint.note.text"
+                android:hint="@string/hint_note_text"
+                android:inputType="textCapSentences"
                 android:singleLine="false"
-                android:text="@{noteItem.text}" />
+                android:text="@{noteWrapper.text}" />
 
         </android.support.design.widget.TextInputLayout>
 

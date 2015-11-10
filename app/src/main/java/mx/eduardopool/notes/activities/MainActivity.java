@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.facebook.AccessToken;
 
 import mx.eduardopool.notes.R;
+import mx.eduardopool.notes.models.UserModel;
 
 public class MainActivity extends BaseActivity {
 
@@ -29,10 +30,16 @@ public class MainActivity extends BaseActivity {
     }
 
     private void doAuthentication(AccessToken accessToken) {
+        boolean isCurrentUserValid = accessToken != null && !accessToken.isExpired();
+
+        if (!isCurrentUserValid) {
+            UserModel.signOut(this);
+        }
+
         Class<? extends AppCompatActivity> clazz =
-                accessToken == null || accessToken.isExpired() ?
-                        FacebookLoginActivity.class :
-                        NoteListActivity.class;
+                isCurrentUserValid ?
+                        NoteListActivity.class :
+                        FacebookLoginActivity.class;
 
         Intent intent = new Intent(this, clazz);
         startActivity(intent);

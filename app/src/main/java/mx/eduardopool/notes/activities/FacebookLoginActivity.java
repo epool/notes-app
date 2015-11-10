@@ -12,6 +12,7 @@ import com.facebook.login.LoginResult;
 
 import mx.eduardopool.notes.R;
 import mx.eduardopool.notes.databinding.ActivityFacebookLoginBinding;
+import mx.eduardopool.notes.models.UserModel;
 
 public class FacebookLoginActivity extends BaseActivity implements FacebookCallback<LoginResult> {
     private CallbackManager callbackManager;
@@ -42,8 +43,7 @@ public class FacebookLoginActivity extends BaseActivity implements FacebookCallb
     public void onSuccess(LoginResult loginResult) {
         AccessToken accessToken = loginResult.getAccessToken();
 
-        // TODO Store user session
-        System.out.println(String.format("========> %s %s", accessToken.getUserId(), accessToken.getToken()));
+        UserModel.signIn(this, accessToken.getUserId());
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
