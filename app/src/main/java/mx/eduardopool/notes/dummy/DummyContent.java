@@ -32,6 +32,16 @@ public class DummyContent {
         }
     }
 
+    public static NoteItem getNoteItemById(String noteItemId) {
+        for (int i = 0; i < ITEMS.size(); i++) {
+            NoteItem noteItem = ITEMS.get(i);
+            if (noteItem.getId().equals(noteItemId)) {
+                return noteItem;
+            }
+        }
+        return null;
+    }
+
     private static void addItem(NoteItem item) {
         ITEMS.add(item);
         ITEM_MAP.put(item.getId(), item);

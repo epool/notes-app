@@ -1,18 +1,18 @@
 package mx.eduardopool.notes.fragments;
 
 import android.app.Activity;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import mx.eduardopool.notes.R;
 import mx.eduardopool.notes.activities.NoteDetailActivity;
 import mx.eduardopool.notes.activities.NoteListActivity;
-import mx.eduardopool.notes.dummy.DummyContent;
+import mx.eduardopool.notes.databinding.FragmentNoteDetailBinding;
 import mx.eduardopool.notes.models.NoteItem;
 
 /**
@@ -21,17 +21,19 @@ import mx.eduardopool.notes.models.NoteItem;
  * in two-pane mode (on tablets) or a {@link NoteDetailActivity}
  * on handsets.
  */
-public class NoteDetailFragment extends Fragment {
+public class NoteDetailFragment extends BaseFragment {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
-    public static final String ARG_ITEM_ID = "item_id";
+    public static final String ARG_NOTE_ITEM = "ARG_NOTE_ITEM";
 
     /**
      * The dummy title this fragment is presenting.
      */
-    private NoteItem mItem;
+    private NoteItem noteItem;
+
+    private FragmentNoteDetailBinding binding;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -40,34 +42,53 @@ public class NoteDetailFragment extends Fragment {
     public NoteDetailFragment() {
     }
 
+    public static NoteDetailFragment newInstance(NoteItem noteItem) {
+
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_NOTE_ITEM, noteItem);
+
+        NoteDetailFragment fragment = new NoteDetailFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
+        if (getArguments().containsKey(ARG_NOTE_ITEM)) {
             // Load the dummy title specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load title from a title provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
-
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.getTitle());
+            noteItem = getArguments().getParcelable(ARG_NOTE_ITEM);
+            if (noteItem != null) {
+                setTitle(noteItem.getTitle());
             }
         }
     }
 
+    public void setTitle(String title) {
+        Activity activity = this.getActivity();
+        CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+        if (appBarLayout != null) {
+            appBarLayout.setTitle(title);
+        }
+    }
+
+    @NonNull
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_note_detail, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_note_detail, container, false);
 
-        // Show the dummy title as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.note_detail)).setText(mItem.getText());
-        }
+        binding.setNoteItem(noteItem);
 
-        return rootView;
+        return binding.getRoot();
     }
+
+    public void updateNoteDetail(NoteItem noteItem) {
+        setTitle(noteItem.getTitle());
+        binding.setNoteItem(noteItem);
+    }
+
 }

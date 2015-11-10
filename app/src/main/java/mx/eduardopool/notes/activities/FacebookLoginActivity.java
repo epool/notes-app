@@ -9,9 +9,9 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 
 import mx.eduardopool.notes.R;
+import mx.eduardopool.notes.databinding.ActivityFacebookLoginBinding;
 
 public class FacebookLoginActivity extends BaseActivity implements FacebookCallback<LoginResult> {
     private CallbackManager callbackManager;
@@ -22,8 +22,9 @@ public class FacebookLoginActivity extends BaseActivity implements FacebookCallb
 
         callbackManager = CallbackManager.Factory.create();
 
-        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.registerCallback(callbackManager, this);
+        ActivityFacebookLoginBinding binding = getBinding(ActivityFacebookLoginBinding.class);
+
+        binding.loginButton.registerCallback(callbackManager, this);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class FacebookLoginActivity extends BaseActivity implements FacebookCallb
         // TODO Store user session
         System.out.println(String.format("========> %s %s", accessToken.getUserId(), accessToken.getToken()));
 
-        Intent intent = new Intent(this, NoteListActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
 
         finish();
