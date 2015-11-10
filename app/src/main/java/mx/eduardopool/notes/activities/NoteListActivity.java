@@ -16,6 +16,7 @@ import mx.eduardopool.notes.fragments.NoteDetailFragment;
 import mx.eduardopool.notes.fragments.NoteDialogFragment;
 import mx.eduardopool.notes.fragments.NoteListFragment;
 import mx.eduardopool.notes.models.NoteModel;
+import mx.eduardopool.notes.models.UserModel;
 import mx.eduardopool.notes.models.realm.Note;
 import mx.eduardopool.notes.models.wrappers.NoteWrapper;
 
@@ -140,6 +141,7 @@ public class NoteListActivity extends BaseActivity
             case R.id.signOutMenuId:
 
                 LoginManager.getInstance().logOut();
+                UserModel.signOut(this);
 
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
