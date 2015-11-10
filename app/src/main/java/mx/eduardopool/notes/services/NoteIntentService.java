@@ -13,7 +13,7 @@ import mx.eduardopool.notes.models.wrappers.NoteWrapper;
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
- * <p>
+ * <p/>
  * helper methods.
  */
 public class NoteIntentService extends IntentService {
