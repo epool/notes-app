@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -186,7 +185,6 @@ public class NoteListFragment extends BaseFragment implements AdapterView.OnItem
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getBaseActivity(), "This note will be deleted", Toast.LENGTH_LONG).show();
                 mCallbacks.onItemDeleted(note);
             }
         });
