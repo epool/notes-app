@@ -1,11 +1,19 @@
 package mx.eduardopool.notes.fragments;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -13,6 +21,7 @@ import mx.eduardopool.notes.R;
 import mx.eduardopool.notes.activities.NoteDetailActivity;
 import mx.eduardopool.notes.activities.NoteListActivity;
 import mx.eduardopool.notes.databinding.FragmentNoteDetailBinding;
+import mx.eduardopool.notes.models.NoteModel;
 import mx.eduardopool.notes.models.wrappers.NoteWrapper;
 
 /**
@@ -56,6 +65,8 @@ public class NoteDetailFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setHasOptionsMenu(true);
+
         if (getArguments().containsKey(ARG_NOTE_ITEM)) {
             // Load the dummy title specified by the fragment
             // arguments. In a real-world scenario, use a Loader
@@ -85,4 +96,39 @@ public class NoteDetailFragment extends BaseFragment {
         return binding.getRoot();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.note_detail_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.deleteNoteMenuId:
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getBaseActivity());
+                builder.setTitle(R.string.title_delete_note);
+                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        NoteModel.deleteNote(getBaseActivity(), noteWrapper);
+
+                        Intent intent = new Intent(getBaseActivity(), NoteListActivity.class);
+                        NavUtils.navigateUpTo(getBaseActivity(), intent);
+                    }
+                });
+                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                Dialog dialog = builder.create();
+                dialog.show();
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }
