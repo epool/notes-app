@@ -2,12 +2,14 @@ package mx.eduardopool.notes.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 import android.view.View;
 
 import mx.eduardopool.notes.R;
+import mx.eduardopool.notes.broadcastreceivers.NoteStatusReceiver;
 import mx.eduardopool.notes.databinding.ActivityNoteDetailBinding;
 import mx.eduardopool.notes.fragments.NoteDetailFragment;
 import mx.eduardopool.notes.fragments.NoteDialogFragment;
@@ -24,12 +26,13 @@ import mx.eduardopool.notes.models.wrappers.NoteWrapper;
  * more than a {@link NoteDetailFragment}.
  */
 public class NoteDetailActivity extends BaseActivity implements NoteDialogFragment.NoteDialogListener {
+    private ActivityNoteDetailBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActivityNoteDetailBinding binding = getBinding(ActivityNoteDetailBinding.class);
+        binding = getBinding(ActivityNoteDetailBinding.class);
 
         final NoteWrapper noteWrapper = getIntent().getParcelableExtra(NoteDetailFragment.ARG_NOTE_ITEM);
         binding.setNoteWrapper(noteWrapper);
@@ -75,6 +78,25 @@ public class NoteDetailActivity extends BaseActivity implements NoteDialogFragme
     @Override
     protected int getToolbarId() {
         return R.id.detail_toolbar;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        registerNoteStatusReceiver(new NoteStatusReceiver.Callback() {
+            @Override
+            public void onNoteUpdated(NoteWrapper noteWrapper) {
+                Snackbar.make(binding.getRoot(), R.string.message_note_updated, Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        unregisterNoteStatusReceiver();
     }
 
     @Override

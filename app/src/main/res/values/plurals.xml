@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <plurals name="title_selected_notes">
+        <item quantity="one">%d note selected</item>
+        <item quantity="other">%d notes selected</item>
+    </plurals>
+
+    <plurals name="title_delete_note">
+        <item quantity="one">Are you sure you want delete this note?</item>
+        <item quantity="other">Are you sure you want delete these notes?</item>
+    </plurals>
+
+    <plurals name="message_notes_deleted">
+        <item quantity="one">%d note was deleted.</item>
+        <item quantity="other">%d notes were deleted.</item>
+    </plurals>
+
+</resources>

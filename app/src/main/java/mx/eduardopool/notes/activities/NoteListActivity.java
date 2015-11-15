@@ -2,6 +2,8 @@ package mx.eduardopool.notes.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v7.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -10,7 +12,10 @@ import android.view.View;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 
+import java.util.ArrayList;
+
 import mx.eduardopool.notes.R;
+import mx.eduardopool.notes.broadcastreceivers.NoteStatusReceiver;
 import mx.eduardopool.notes.databinding.ActivityNoteAppBarBinding;
 import mx.eduardopool.notes.fragments.NoteDetailFragment;
 import mx.eduardopool.notes.fragments.NoteDialogFragment;
@@ -39,12 +44,13 @@ import mx.eduardopool.notes.models.wrappers.NoteWrapper;
  */
 public class NoteListActivity extends BaseActivity
         implements NoteListFragment.Callbacks, NoteDialogFragment.NoteDialogListener {
+    private ActivityNoteAppBarBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActivityNoteAppBarBinding binding = getBinding(ActivityNoteAppBarBinding.class);
+        binding = getBinding(ActivityNoteAppBarBinding.class);
 
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,6 +59,20 @@ public class NoteListActivity extends BaseActivity
                 noteDialogFragment.show(getSupportFragmentManager(), "NoteDialogFragment");
             }
         });
+    }
+
+    @Override
+    public void onSupportActionModeStarted(ActionMode mode) {
+        binding.fab.hide();
+
+        super.onSupportActionModeStarted(mode);
+    }
+
+    @Override
+    public void onSupportActionModeFinished(ActionMode mode) {
+        super.onSupportActionModeFinished(mode);
+
+        binding.fab.show();
     }
 
     @Override
@@ -65,7 +85,7 @@ public class NoteListActivity extends BaseActivity
      * indicating that the item with the given ID was selected.
      */
     @Override
-    public void onItemSelected(Note note) {
+    public void onNoteSelected(Note note) {
         NoteWrapper noteWrapper = new NoteWrapper(note);
         // In single-pane mode, simply start the detail activity
         // for the selected item ID.
@@ -75,8 +95,8 @@ public class NoteListActivity extends BaseActivity
     }
 
     @Override
-    public void onItemDeleted(Note note) {
-        NoteModel.deleteNote(this, new NoteWrapper(note));
+    public void onNotesDeleted(ArrayList<String> noteIds) {
+        NoteModel.deleteNotes(this, noteIds);
     }
 
     @Override
@@ -85,6 +105,19 @@ public class NoteListActivity extends BaseActivity
 
         // Logs 'install' and 'app activate' App Events.
         AppEventsLogger.activateApp(this);
+
+        registerNoteStatusReceiver(new NoteStatusReceiver.Callback() {
+            @Override
+            public void onNoteAdded(NoteWrapper noteWrapper) {
+                Snackbar.make(binding.getRoot(), R.string.message_note_added, Snackbar.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNotesDeleted(int notesDeletedCount) {
+                String message = getResources().getQuantityString(R.plurals.message_notes_deleted, notesDeletedCount, notesDeletedCount);
+                Snackbar.make(binding.getRoot(), message, Snackbar.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -93,6 +126,8 @@ public class NoteListActivity extends BaseActivity
 
         // Logs 'app deactivate' App Event.
         AppEventsLogger.deactivateApp(this);
+
+        unregisterNoteStatusReceiver();
     }
 
     @Override

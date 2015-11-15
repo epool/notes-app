@@ -1,17 +1,22 @@
 package mx.eduardopool.notes.fragments;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -20,6 +25,7 @@ import mx.eduardopool.notes.adapters.NoteListAdapter;
 import mx.eduardopool.notes.databinding.FragmentNoteListBinding;
 import mx.eduardopool.notes.models.NoteModel;
 import mx.eduardopool.notes.models.realm.Note;
+import mx.eduardopool.notes.utils.ViewUtil;
 
 /**
  * A list fragment representing a list of Notes. This fragment
@@ -30,7 +36,7 @@ import mx.eduardopool.notes.models.realm.Note;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class NoteListFragment extends BaseFragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+public class NoteListFragment extends BaseFragment implements AdapterView.OnItemClickListener {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -43,11 +49,11 @@ public class NoteListFragment extends BaseFragment implements AdapterView.OnItem
      */
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onItemSelected(Note note) {
+        public void onNoteSelected(Note note) {
         }
 
         @Override
-        public void onItemDeleted(Note note) {
+        public void onNotesDeleted(ArrayList<String> noteIds) {
 
         }
     };
@@ -95,7 +101,64 @@ public class NoteListFragment extends BaseFragment implements AdapterView.OnItem
 
         binding.noteList.setOnItemClickListener(this);
 
-        binding.noteList.setOnItemLongClickListener(this);
+        binding.noteList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        binding.noteList.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position,
+                                                  long id, boolean checked) {
+                // Update title
+                int count = binding.noteList.getCheckedItemCount();
+                if (count > 0) {
+                    mode.setTitle(getResources().getQuantityString(R.plurals.title_selected_notes, count, count));
+
+                    noteListAdapter.checkItemAtPosition(checked, position);
+                }
+            }
+
+            @Override
+            public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
+                // Respond to clicks on the actions in the CAB
+                switch (item.getItemId()) {
+                    case R.id.deleteNotesMenuId:
+                        int count = binding.noteList.getCheckedItemCount();
+                        ViewUtil.showDeleteNotesConfirmationDialog(getBaseActivity(), count, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                NoteModel.deleteNotes(getBaseActivity(), noteListAdapter.getSelectedNoteIds());
+
+                                mode.finish(); // Action picked, so close the CAB
+                            }
+                        });
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                // Inflate the menu for the CAB
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.notes_cab_menu, menu);
+                return true;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                // Here you can make any necessary updates to the activity when
+                // the CAB is removed. By default, selected items are deselected/unchecked.
+                binding.noteList.clearChoices();
+                noteListAdapter.getSelectedNoteIds().clear();
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                // Here you can perform updates to the CAB due to
+                // an invalidate() request
+                return false;
+            }
+        });
 
         return binding.getRoot();
     }
@@ -162,29 +225,7 @@ public class NoteListFragment extends BaseFragment implements AdapterView.OnItem
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
         Note note = (Note) parent.getItemAtPosition(position);
-        mCallbacks.onItemSelected(note);
-    }
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        final Note note = (Note) parent.getItemAtPosition(position);
-        AlertDialog.Builder builder = new AlertDialog.Builder(getBaseActivity());
-        builder.setTitle(R.string.title_delete_note);
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mCallbacks.onItemDeleted(note);
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        Dialog dialog = builder.create();
-        dialog.show();
-        return true;
+        mCallbacks.onNoteSelected(note);
     }
 
     /**
@@ -196,8 +237,8 @@ public class NoteListFragment extends BaseFragment implements AdapterView.OnItem
         /**
          * Callback for when an item has been selected.
          */
-        void onItemSelected(Note note);
+        void onNoteSelected(Note note);
 
-        void onItemDeleted(Note note);
+        void onNotesDeleted(ArrayList<String> noteIds);
     }
 }

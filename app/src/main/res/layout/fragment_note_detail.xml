@@ -1,5 +1,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".fragments.NoteDetailFragment">
 
     <data>
 
@@ -19,7 +20,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@{@string/label_created_at(noteWrapper.createDateFormatted)}"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            tools:text="Date" />
 
         <TextView
             android:id="@+id/noteDetail"
@@ -28,7 +30,7 @@
             android:text="@{noteWrapper.text}"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textIsSelectable="true"
-            tools:context=".fragments.NoteDetailFragment" />
+            tools:text="Text" />
 
     </LinearLayout>
 </layout>

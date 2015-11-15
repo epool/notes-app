@@ -30,24 +30,25 @@
         <activity
             android:name=".activities.NoteListActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:launchMode="singleTop" />
         <activity
             android:name=".activities.NoteDetailActivity"
             android:label="@string/title_note_detail"
-            android:parentActivityName=".activities.NoteListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:parentActivityName=".activities.NoteListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.NoteListActivity" />
         </activity>
         <activity
             android:name=".activities.FacebookLoginActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/app_name" />
 
         <service
             android:name=".services.NoteIntentService"
+            android:exported="false" />
+
+        <receiver
+            android:name=".broadcastreceivers.NoteStatusReceiver"
             android:exported="false" />
     </application>
 

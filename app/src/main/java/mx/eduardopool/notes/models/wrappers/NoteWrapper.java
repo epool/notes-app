@@ -9,7 +9,7 @@ import java.util.Date;
 
 import mx.eduardopool.notes.BR;
 import mx.eduardopool.notes.models.realm.Note;
-import mx.eduardopool.notes.utils.Util;
+import mx.eduardopool.notes.utils.ViewUtil;
 
 /**
  * A dummy item representing a piece of title.
@@ -38,7 +38,7 @@ public class NoteWrapper extends BaseObservable implements Parcelable {
         title = note.getTitle();
         text = note.getText();
         createDate = note.getCreateDate();
-        this.createDateFormatted = Util.DATE_FORMAT.format(this.createDate);
+        this.createDateFormatted = ViewUtil.DATE_FORMAT.format(this.createDate);
     }
 
     protected NoteWrapper(Parcel in) {
@@ -46,7 +46,7 @@ public class NoteWrapper extends BaseObservable implements Parcelable {
         this.title = in.readString();
         this.text = in.readString();
         this.createDate = new Date(in.readLong());
-        this.createDateFormatted = Util.DATE_FORMAT.format(this.createDate);
+        this.createDateFormatted = ViewUtil.DATE_FORMAT.format(this.createDate);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class NoteWrapper extends BaseObservable implements Parcelable {
 
     public void setCreateDate(Date createDate) {
         this.createDate = createDate;
-        this.createDateFormatted = Util.DATE_FORMAT.format(this.createDate);
+        this.createDateFormatted = ViewUtil.DATE_FORMAT.format(this.createDate);
         notifyPropertyChanged(BR.createDate);
         notifyPropertyChanged(BR.createDateFormatted);
     }
@@ -123,7 +123,6 @@ public class NoteWrapper extends BaseObservable implements Parcelable {
         Note note = new Note(title, text);
         if (!isCreate) {
             note.setId(id);
-            note.setCreateDate(createDate);
         }
         return note;
     }

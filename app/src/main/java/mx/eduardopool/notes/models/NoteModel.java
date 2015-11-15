@@ -2,6 +2,8 @@ package mx.eduardopool.notes.models;
 
 import android.content.Context;
 
+import java.util.ArrayList;
+
 import io.realm.Realm;
 import io.realm.RealmResults;
 import mx.eduardopool.notes.models.realm.Note;
@@ -56,13 +58,13 @@ public class NoteModel {
     }
 
     /**
-     * Deletes an existing note from the current user. This is handled in a intent service to avoid blocking the UI.
+     * Deletes existing notes from the current user. This is handled in a intent service to avoid blocking the UI.
      *
-     * @param context     Context where this method is invoked.
-     * @param noteWrapper Note to be deleted.
+     * @param context Context where this method is invoked.
+     * @param noteIds Note ids to be deleted.
      */
-    public static void deleteNote(Context context, NoteWrapper noteWrapper) {
-        NoteIntentService.startActionDeleteNote(context, noteWrapper);
+    public static void deleteNotes(Context context, ArrayList<String> noteIds) {
+        NoteIntentService.startActionDeleteNotes(context, noteIds);
     }
 
 }

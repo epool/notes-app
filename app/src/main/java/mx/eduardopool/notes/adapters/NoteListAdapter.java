@@ -5,6 +5,8 @@ import android.databinding.DataBindingUtil;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 import io.realm.RealmBaseAdapter;
 import io.realm.RealmResults;
 import mx.eduardopool.notes.R;
@@ -17,9 +19,24 @@ import mx.eduardopool.notes.models.wrappers.NoteWrapper;
  * Created by epool on 11/6/15.
  */
 public class NoteListAdapter extends RealmBaseAdapter<Note> {
+    private ArrayList<String> selectedNoteIds = new ArrayList<>();
 
     public NoteListAdapter(Context context, RealmResults<Note> realmResults, boolean automaticUpdate) {
         super(context, realmResults, automaticUpdate);
+    }
+
+    public void checkItemAtPosition(boolean checked, int position) {
+        Note note = getItem(position);
+        String noteId = note.getId();
+        if (checked && !selectedNoteIds.contains(noteId)) {
+            selectedNoteIds.add(noteId);
+        } else if (!checked && selectedNoteIds.contains(noteId)) {
+            selectedNoteIds.remove(noteId);
+        }
+    }
+
+    public ArrayList<String> getSelectedNoteIds() {
+        return selectedNoteIds;
     }
 
     @Override

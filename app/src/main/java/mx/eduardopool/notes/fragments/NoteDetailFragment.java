@@ -1,7 +1,6 @@
 package mx.eduardopool.notes.fragments;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -9,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,12 +15,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import mx.eduardopool.notes.R;
 import mx.eduardopool.notes.activities.NoteDetailActivity;
 import mx.eduardopool.notes.activities.NoteListActivity;
 import mx.eduardopool.notes.databinding.FragmentNoteDetailBinding;
 import mx.eduardopool.notes.models.NoteModel;
 import mx.eduardopool.notes.models.wrappers.NoteWrapper;
+import mx.eduardopool.notes.utils.ViewUtil;
 
 /**
  * A fragment representing a single Note detail screen.
@@ -41,8 +43,6 @@ public class NoteDetailFragment extends BaseFragment {
      * The dummy title this fragment is presenting.
      */
     private NoteWrapper noteWrapper;
-
-    private FragmentNoteDetailBinding binding;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -89,7 +89,7 @@ public class NoteDetailFragment extends BaseFragment {
     @NonNull
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_note_detail, container, false);
+        FragmentNoteDetailBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_note_detail, container, false);
 
         binding.setNoteWrapper(noteWrapper);
 
@@ -106,25 +106,15 @@ public class NoteDetailFragment extends BaseFragment {
         switch (item.getItemId()) {
             case R.id.deleteNoteMenuId:
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(getBaseActivity());
-                builder.setTitle(R.string.title_delete_note);
-                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                ViewUtil.showDeleteNotesConfirmationDialog(getBaseActivity(), 1, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        NoteModel.deleteNote(getBaseActivity(), noteWrapper);
+                        NoteModel.deleteNotes(getBaseActivity(), new ArrayList<>(Collections.singletonList(noteWrapper.getId())));
 
                         Intent intent = new Intent(getBaseActivity(), NoteListActivity.class);
                         NavUtils.navigateUpTo(getBaseActivity(), intent);
                     }
                 });
-                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-                Dialog dialog = builder.create();
-                dialog.show();
 
                 return true;
             default:

@@ -16,7 +16,7 @@ import android.widget.Button;
 import java.util.Date;
 
 import mx.eduardopool.notes.R;
-import mx.eduardopool.notes.databinding.AddEditNoteBinding;
+import mx.eduardopool.notes.databinding.FragmentDialogAddEditNoteBinding;
 import mx.eduardopool.notes.models.wrappers.NoteWrapper;
 
 /**
@@ -25,7 +25,7 @@ import mx.eduardopool.notes.models.wrappers.NoteWrapper;
  */
 public class NoteDialogFragment extends DialogFragment {
     private static String NOTE_KEY = "NOTE_KEY";
-    private AddEditNoteBinding binding;
+    private FragmentDialogAddEditNoteBinding binding;
 
     // Use this instance of the interface to deliver action events
     private NoteDialogListener listener;
@@ -46,7 +46,7 @@ public class NoteDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        binding = DataBindingUtil.inflate(inflater, R.layout.add_edit_note, null, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_dialog_add_edit_note, null, false);
 
         NoteWrapper noteWrapper = getArguments().getParcelable(NOTE_KEY);
         binding.setNoteWrapper(noteWrapper);
