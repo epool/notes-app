@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.facebook.appevents.AppEventsLogger;
-import com.facebook.login.LoginManager;
 
 import java.util.ArrayList;
 
@@ -23,7 +22,7 @@ import mx.eduardopool.notes.fragments.NoteListFragment;
 import mx.eduardopool.notes.models.NoteModel;
 import mx.eduardopool.notes.models.UserModel;
 import mx.eduardopool.notes.models.realm.Note;
-import mx.eduardopool.notes.models.wrappers.NoteWrapper;
+import mx.eduardopool.notes.models.viewmodels.NoteViewModel;
 
 
 /**
@@ -86,11 +85,11 @@ public class NoteListActivity extends BaseActivity
      */
     @Override
     public void onNoteSelected(Note note) {
-        NoteWrapper noteWrapper = new NoteWrapper(note);
+        NoteViewModel noteViewModel = new NoteViewModel(note);
         // In single-pane mode, simply start the detail activity
         // for the selected item ID.
         Intent detailIntent = new Intent(this, NoteDetailActivity.class);
-        detailIntent.putExtra(NoteDetailFragment.ARG_NOTE_ITEM, noteWrapper);
+        detailIntent.putExtra(NoteDetailFragment.ARG_NOTE_ITEM, noteViewModel);
         startActivity(detailIntent);
     }
 
@@ -108,7 +107,7 @@ public class NoteListActivity extends BaseActivity
 
         registerNoteStatusReceiver(new NoteStatusReceiver.Callback() {
             @Override
-            public void onNoteAdded(NoteWrapper noteWrapper) {
+            public void onNoteAdded(NoteViewModel noteViewModel) {
                 Snackbar.make(binding.getRoot(), R.string.message_note_added, Snackbar.LENGTH_SHORT).show();
             }
 
@@ -142,7 +141,6 @@ public class NoteListActivity extends BaseActivity
         switch (item.getItemId()) {
             case R.id.signOutMenuId:
 
-                LoginManager.getInstance().logOut();
                 UserModel.signOut(this);
 
                 Intent intent = new Intent(this, MainActivity.class);
@@ -157,7 +155,7 @@ public class NoteListActivity extends BaseActivity
     }
 
     @Override
-    public void onDialogPositiveClick(NoteWrapper noteWrapper) {
-        NoteModel.addNewNote(this, noteWrapper);
+    public void onDialogPositiveClick(NoteViewModel noteViewModel) {
+        NoteModel.addNewNote(this, noteViewModel);
     }
 }

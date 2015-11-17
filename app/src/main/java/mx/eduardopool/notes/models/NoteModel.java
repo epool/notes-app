@@ -8,7 +8,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import mx.eduardopool.notes.models.realm.Note;
 import mx.eduardopool.notes.models.realm.User;
-import mx.eduardopool.notes.models.wrappers.NoteWrapper;
+import mx.eduardopool.notes.models.viewmodels.NoteViewModel;
 import mx.eduardopool.notes.services.NoteIntentService;
 
 /**
@@ -40,21 +40,21 @@ public class NoteModel {
     /**
      * Adds a new note to the current user. This is handled in a intent service to avoid blocking the UI.
      *
-     * @param context     Context where this method is invoked.
-     * @param noteWrapper Note to be added.
+     * @param context       Context where this method is invoked.
+     * @param noteViewModel Note to be added.
      */
-    public static void addNewNote(Context context, NoteWrapper noteWrapper) {
-        NoteIntentService.startActionAddNote(context, noteWrapper);
+    public static void addNewNote(Context context, NoteViewModel noteViewModel) {
+        NoteIntentService.startActionAddNote(context, noteViewModel);
     }
 
     /**
      * Updates an existing note from the current user. This is handled in a intent service to avoid blocking the UI.
      *
-     * @param context     Context where this method is invoked.
-     * @param noteWrapper Note to be edited.
+     * @param context       Context where this method is invoked.
+     * @param noteViewModel Note to be edited.
      */
-    public static void updateNote(Context context, NoteWrapper noteWrapper) {
-        NoteIntentService.startActionUpdateNote(context, noteWrapper);
+    public static void updateNote(Context context, NoteViewModel noteViewModel) {
+        NoteIntentService.startActionUpdateNote(context, noteViewModel);
     }
 
     /**

@@ -21,6 +21,8 @@ public class FacebookLoginActivity extends BaseActivity implements FacebookCallb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        UserModel.signOut(this);
+
         callbackManager = CallbackManager.Factory.create();
 
         ActivityFacebookLoginBinding binding = getBinding(ActivityFacebookLoginBinding.class);

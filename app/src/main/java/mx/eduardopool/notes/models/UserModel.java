@@ -3,6 +3,8 @@ package mx.eduardopool.notes.models;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.facebook.login.LoginManager;
+
 import io.realm.Realm;
 import mx.eduardopool.notes.R;
 import mx.eduardopool.notes.models.realm.User;
@@ -39,6 +41,8 @@ public class UserModel {
     }
 
     public static void signOut(Context context) {
+        LoginManager.getInstance().logOut();
+
         SharedPreferences sharedPreferences = context.getSharedPreferences(context.getString(R.string.shared_preference_file_name), Context.MODE_PRIVATE);
         sharedPreferences.edit()
                 .putString(context.getString(R.string.current_user_id), null)

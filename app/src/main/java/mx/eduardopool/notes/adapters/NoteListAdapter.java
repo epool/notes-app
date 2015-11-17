@@ -12,7 +12,7 @@ import io.realm.RealmResults;
 import mx.eduardopool.notes.R;
 import mx.eduardopool.notes.databinding.NoteItemBinding;
 import mx.eduardopool.notes.models.realm.Note;
-import mx.eduardopool.notes.models.wrappers.NoteWrapper;
+import mx.eduardopool.notes.models.viewmodels.NoteViewModel;
 
 /**
  * Adapter for note list.
@@ -52,7 +52,7 @@ public class NoteListAdapter extends RealmBaseAdapter<Note> {
         Note note = realmResults.get(position);
 
         NoteItemBinding binding = (NoteItemBinding) rowView.getTag();
-        binding.setNoteWrapper(new NoteWrapper(note));
+        binding.setNoteViewModel(new NoteViewModel(note));
 
         return rowView;
     }

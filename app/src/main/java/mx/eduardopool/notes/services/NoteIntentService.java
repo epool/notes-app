@@ -12,7 +12,7 @@ import io.realm.RealmList;
 import mx.eduardopool.notes.models.UserModel;
 import mx.eduardopool.notes.models.realm.Note;
 import mx.eduardopool.notes.models.realm.User;
-import mx.eduardopool.notes.models.wrappers.NoteWrapper;
+import mx.eduardopool.notes.models.viewmodels.NoteViewModel;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -40,13 +40,13 @@ public class NoteIntentService extends IntentService {
      * Starts this service to perform action ADD_NOTE with the given parameters. If
      * the service is already performing a task this action will be queued.
      *
-     * @param context     Context where this method is invoked.
-     * @param noteWrapper Note to be added.
+     * @param context       Context where this method is invoked.
+     * @param noteViewModel Note to be added.
      */
-    public static void startActionAddNote(Context context, NoteWrapper noteWrapper) {
+    public static void startActionAddNote(Context context, NoteViewModel noteViewModel) {
         Intent intent = new Intent(context, NoteIntentService.class);
         intent.setAction(ACTION_ADD_NOTE);
-        intent.putExtra(EXTRA_NOTE_WRAPPER, noteWrapper);
+        intent.putExtra(EXTRA_NOTE_WRAPPER, noteViewModel);
         context.startService(intent);
     }
 
@@ -54,13 +54,13 @@ public class NoteIntentService extends IntentService {
      * Starts this service to perform action UPDATE_NOTE with the given parameters. If
      * the service is already performing a task this action will be queued.
      *
-     * @param context     Context where this method is invoked.
-     * @param noteWrapper Note to be updated.
+     * @param context       Context where this method is invoked.
+     * @param noteViewModel Note to be updated.
      */
-    public static void startActionUpdateNote(Context context, NoteWrapper noteWrapper) {
+    public static void startActionUpdateNote(Context context, NoteViewModel noteViewModel) {
         Intent intent = new Intent(context, NoteIntentService.class);
         intent.setAction(ACTION_UPDATE_NOTE);
-        intent.putExtra(EXTRA_NOTE_WRAPPER, noteWrapper);
+        intent.putExtra(EXTRA_NOTE_WRAPPER, noteViewModel);
         context.startService(intent);
     }
 
@@ -91,13 +91,13 @@ public class NoteIntentService extends IntentService {
             final String action = intent.getAction();
             if (action != null) {
                 Realm realm = Realm.getDefaultInstance();
-                NoteWrapper noteWrapper = intent.getParcelableExtra(EXTRA_NOTE_WRAPPER);
+                NoteViewModel noteViewModel = intent.getParcelableExtra(EXTRA_NOTE_WRAPPER);
                 switch (action) {
                     case ACTION_ADD_NOTE:
-                        handleActionAddNote(realm, noteWrapper);
+                        handleActionAddNote(realm, noteViewModel);
                         break;
                     case ACTION_UPDATE_NOTE:
-                        handleActionUpdateNote(realm, noteWrapper);
+                        handleActionUpdateNote(realm, noteViewModel);
                         break;
                     case ACTION_DELETE_NOTES:
                         ArrayList<String> noteIds = intent.getStringArrayListExtra(EXTRA_NOTE_IDS);
@@ -113,11 +113,11 @@ public class NoteIntentService extends IntentService {
      * Handle action ADD_NOTE in the provided background thread with the provided
      * parameters.
      *
-     * @param realm       Realm instance to do realm transactions.
-     * @param noteWrapper Note to be added.
+     * @param realm         Realm instance to do realm transactions.
+     * @param noteViewModel Note to be added.
      */
-    private void handleActionAddNote(Realm realm, NoteWrapper noteWrapper) {
-        Note note = noteWrapper.toRealm(true);
+    private void handleActionAddNote(Realm realm, NoteViewModel noteViewModel) {
+        Note note = noteViewModel.toRealm(true);
 
         realm.beginTransaction();
         Note noteAdded = realm.copyToRealmOrUpdate(note);
@@ -128,17 +128,17 @@ public class NoteIntentService extends IntentService {
                 .add(noteAdded);
         realm.commitTransaction();
 
-        notifyNoteAdded(new NoteWrapper(noteAdded));
+        notifyNoteAdded(new NoteViewModel(noteAdded));
     }
 
     /**
      * Notifies note added.
      *
-     * @param noteWrapper Note added.
+     * @param noteViewModel Note added.
      */
-    private void notifyNoteAdded(NoteWrapper noteWrapper) {
+    private void notifyNoteAdded(NoteViewModel noteViewModel) {
         Intent intent = new Intent(ACTION_NOTE_ADDED);
-        intent.putExtra(EXTRA_NOTE_WRAPPER, noteWrapper);
+        intent.putExtra(EXTRA_NOTE_WRAPPER, noteViewModel);
         localBroadcastManager.sendBroadcast(intent);
     }
 
@@ -146,27 +146,27 @@ public class NoteIntentService extends IntentService {
      * Handle action UPDATE_NOTE in the provided background thread with the provided
      * parameters.
      *
-     * @param realm       Realm instance to do realm transactions.
-     * @param noteWrapper Note to be updated.
+     * @param realm         Realm instance to do realm transactions.
+     * @param noteViewModel Note to be updated.
      */
-    private void handleActionUpdateNote(Realm realm, NoteWrapper noteWrapper) {
-        Note note = noteWrapper.toRealm(false);
+    private void handleActionUpdateNote(Realm realm, NoteViewModel noteViewModel) {
+        Note note = noteViewModel.toRealm(false);
 
         realm.beginTransaction();
         Note noteUpdated = realm.copyToRealmOrUpdate(note);
         realm.commitTransaction();
 
-        notifyNoteUpdated(new NoteWrapper(noteUpdated));
+        notifyNoteUpdated(new NoteViewModel(noteUpdated));
     }
 
     /**
      * Notifies note updated.
      *
-     * @param noteWrapper Note updated.
+     * @param noteViewModel Note updated.
      */
-    private void notifyNoteUpdated(NoteWrapper noteWrapper) {
+    private void notifyNoteUpdated(NoteViewModel noteViewModel) {
         Intent intent = new Intent(ACTION_NOTE_UPDATED);
-        intent.putExtra(EXTRA_NOTE_WRAPPER, noteWrapper);
+        intent.putExtra(EXTRA_NOTE_WRAPPER, noteViewModel);
         localBroadcastManager.sendBroadcast(intent);
     }
 

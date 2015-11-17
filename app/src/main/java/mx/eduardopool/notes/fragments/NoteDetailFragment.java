@@ -23,7 +23,7 @@ import mx.eduardopool.notes.activities.NoteDetailActivity;
 import mx.eduardopool.notes.activities.NoteListActivity;
 import mx.eduardopool.notes.databinding.FragmentNoteDetailBinding;
 import mx.eduardopool.notes.models.NoteModel;
-import mx.eduardopool.notes.models.wrappers.NoteWrapper;
+import mx.eduardopool.notes.models.viewmodels.NoteViewModel;
 import mx.eduardopool.notes.utils.ViewUtil;
 
 /**
@@ -42,7 +42,7 @@ public class NoteDetailFragment extends BaseFragment {
     /**
      * The dummy title this fragment is presenting.
      */
-    private NoteWrapper noteWrapper;
+    private NoteViewModel noteViewModel;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -51,10 +51,10 @@ public class NoteDetailFragment extends BaseFragment {
     public NoteDetailFragment() {
     }
 
-    public static NoteDetailFragment newInstance(NoteWrapper noteWrapper) {
+    public static NoteDetailFragment newInstance(NoteViewModel noteViewModel) {
 
         Bundle args = new Bundle();
-        args.putParcelable(ARG_NOTE_ITEM, noteWrapper);
+        args.putParcelable(ARG_NOTE_ITEM, noteViewModel);
 
         NoteDetailFragment fragment = new NoteDetailFragment();
         fragment.setArguments(args);
@@ -71,9 +71,9 @@ public class NoteDetailFragment extends BaseFragment {
             // Load the dummy title specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load title from a title provider.
-            noteWrapper = getArguments().getParcelable(ARG_NOTE_ITEM);
-            if (noteWrapper != null) {
-                setTitle(noteWrapper.getTitle());
+            noteViewModel = getArguments().getParcelable(ARG_NOTE_ITEM);
+            if (noteViewModel != null) {
+                setTitle(noteViewModel.getTitle());
             }
         }
     }
@@ -91,7 +91,7 @@ public class NoteDetailFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         FragmentNoteDetailBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_note_detail, container, false);
 
-        binding.setNoteWrapper(noteWrapper);
+        binding.setNoteViewModel(noteViewModel);
 
         return binding.getRoot();
     }
@@ -109,7 +109,7 @@ public class NoteDetailFragment extends BaseFragment {
                 ViewUtil.showDeleteNotesConfirmationDialog(getBaseActivity(), 1, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        NoteModel.deleteNotes(getBaseActivity(), new ArrayList<>(Collections.singletonList(noteWrapper.getId())));
+                        NoteModel.deleteNotes(getBaseActivity(), new ArrayList<>(Collections.singletonList(noteViewModel.getId())));
 
                         Intent intent = new Intent(getBaseActivity(), NoteListActivity.class);
                         NavUtils.navigateUpTo(getBaseActivity(), intent);

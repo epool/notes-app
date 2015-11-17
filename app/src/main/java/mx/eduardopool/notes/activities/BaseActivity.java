@@ -10,17 +10,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
 
+import javax.inject.Inject;
+
+import mx.eduardopool.notes.NoteApplication;
 import mx.eduardopool.notes.R;
 import mx.eduardopool.notes.broadcastreceivers.NoteStatusReceiver;
-import mx.eduardopool.notes.services.NoteIntentService;
+import mx.eduardopool.notes.di.components.NoteApplicationComponent;
 
 /**
  * Base activity
  * Created by epool on 11/5/15.
  */
 public abstract class BaseActivity extends AppCompatActivity {
+    @Inject
+    protected NoteStatusReceiver noteStatusReceiver;
+    @Inject
+    protected IntentFilter intentFilter;
     private ViewDataBinding binding;
-    private NoteStatusReceiver noteStatusReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +41,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             setSupportActionBar(toolbar);
         }
 
-        noteStatusReceiver = new NoteStatusReceiver();
+        injectComponent(((NoteApplication) getApplication()).getNoteApplicationComponent());
     }
 
     @Override
@@ -59,13 +65,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void registerNoteStatusReceiver(NoteStatusReceiver.Callback callback) {
         noteStatusReceiver.setCallback(callback);
 
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(NoteIntentService.ACTION_NOTE_ADDED);
-        intentFilter.addAction(NoteIntentService.ACTION_NOTE_UPDATED);
-        intentFilter.addAction(NoteIntentService.ACTION_NOTES_DELETED);
-
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        localBroadcastManager.registerReceiver(this.noteStatusReceiver, intentFilter);
+        localBroadcastManager.registerReceiver(noteStatusReceiver, intentFilter);
     }
 
     protected void unregisterNoteStatusReceiver() {
@@ -74,6 +75,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected abstract int getLayoutResourceId();
+
+    protected void injectComponent(NoteApplicationComponent component) {
+        component.inject(this);
+    }
 
     protected int getToolbarId() {
         return R.id.toolbar;

@@ -4,8 +4,8 @@
     <data>
 
         <variable
-            name="noteWrapper"
-            type="mx.eduardopool.notes.models.wrappers.NoteWrapper" />
+            name="noteViewModel"
+            type="mx.eduardopool.notes.models.viewmodels.NoteViewModel" />
     </data>
 
     <LinearLayout
@@ -26,7 +26,7 @@
                 android:hint="@string/hint_note_title"
                 android:inputType="textCapWords"
                 android:maxLines="1"
-                android:text="@{noteWrapper.title}" />
+                android:text="@{noteViewModel.title}" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -42,7 +42,7 @@
                 android:hint="@string/hint_note_text"
                 android:inputType="textMultiLine|textCapSentences"
                 android:scrollbars="vertical"
-                android:text="@{noteWrapper.text}" />
+                android:text="@{noteViewModel.text}" />
 
         </android.support.design.widget.TextInputLayout>
 

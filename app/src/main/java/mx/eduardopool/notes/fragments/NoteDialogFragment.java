@@ -17,7 +17,7 @@ import java.util.Date;
 
 import mx.eduardopool.notes.R;
 import mx.eduardopool.notes.databinding.FragmentDialogAddEditNoteBinding;
-import mx.eduardopool.notes.models.wrappers.NoteWrapper;
+import mx.eduardopool.notes.models.viewmodels.NoteViewModel;
 
 /**
  * Dialog fragment to add and edit notes.
@@ -30,10 +30,10 @@ public class NoteDialogFragment extends DialogFragment {
     // Use this instance of the interface to deliver action events
     private NoteDialogListener listener;
 
-    public static NoteDialogFragment newInstance(NoteWrapper noteWrapper) {
+    public static NoteDialogFragment newInstance(NoteViewModel noteViewModel) {
 
         Bundle args = new Bundle();
-        args.putParcelable(NOTE_KEY, noteWrapper != null ? noteWrapper : new NoteWrapper());
+        args.putParcelable(NOTE_KEY, noteViewModel != null ? noteViewModel : new NoteViewModel());
 
         NoteDialogFragment fragment = new NoteDialogFragment();
         fragment.setArguments(args);
@@ -48,8 +48,8 @@ public class NoteDialogFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_dialog_add_edit_note, null, false);
 
-        NoteWrapper noteWrapper = getArguments().getParcelable(NOTE_KEY);
-        binding.setNoteWrapper(noteWrapper);
+        NoteViewModel noteViewModel = getArguments().getParcelable(NOTE_KEY);
+        binding.setNoteViewModel(noteViewModel);
         binding.executePendingBindings();
 
         binding.titleEditText.setSelection(binding.titleEditText.getText().length());
@@ -103,12 +103,12 @@ public class NoteDialogFragment extends DialogFragment {
                         return;
                     }
 
-                    NoteWrapper noteWrapper = binding.getNoteWrapper();
-                    noteWrapper.setTitle(title);
-                    noteWrapper.setText(text);
-                    noteWrapper.setCreateDate(new Date());
+                    NoteViewModel noteViewModel = binding.getNoteViewModel();
+                    noteViewModel.setTitle(title);
+                    noteViewModel.setText(text);
+                    noteViewModel.setCreateDate(new Date());
 
-                    listener.onDialogPositiveClick(noteWrapper);
+                    listener.onDialogPositiveClick(noteViewModel);
 
                     alertDialog.dismiss();
                 }
@@ -131,6 +131,6 @@ public class NoteDialogFragment extends DialogFragment {
     }
 
     public interface NoteDialogListener {
-        void onDialogPositiveClick(NoteWrapper noteWrapper);
+        void onDialogPositiveClick(NoteViewModel noteViewModel);
     }
 }

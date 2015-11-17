@@ -5,8 +5,8 @@
     <data>
 
         <variable
-            name="noteWrapper"
-            type="mx.eduardopool.notes.models.wrappers.NoteWrapper" />
+            name="noteViewModel"
+            type="mx.eduardopool.notes.models.viewmodels.NoteViewModel" />
     </data>
 
     <LinearLayout
@@ -20,7 +20,7 @@
             android:id="@+id/titleTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{noteWrapper.title}"
+            android:text="@{noteViewModel.title}"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             tools:text="Title" />
 
@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:singleLine="true"
-                android:text="@{noteWrapper.text}"
+                android:text="@{noteViewModel.text}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 tools:text="Text" />
 
@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="end"
                 android:singleLine="true"
-                android:text="@{noteWrapper.createDateFormatted}"
+                android:text="@{noteViewModel.createDateFormatted}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 tools:text="Date" />
 
