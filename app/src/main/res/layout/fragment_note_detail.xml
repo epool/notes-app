@@ -1,0 +1,36 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".fragments.NoteDetailFragment">
+
+    <data>
+
+        <variable
+            name="noteViewModel"
+            type="mx.eduardopool.notes.models.viewmodels.NoteViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/createDateTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{@string/label_created_at(noteViewModel.createDateFormatted)}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            tools:text="Date" />
+
+        <TextView
+            android:id="@+id/noteDetail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@{noteViewModel.text}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textIsSelectable="true"
+            tools:text="Text" />
+
+    </LinearLayout>
+</layout>
